@@ -38,7 +38,32 @@ object DailyCodingProblems {
     }
 
     mkListWithAllWordsLessThanKLength(string.split(" ").toList, Nil)
+  }
 
+  /**
+   * #822
+   * Given a list of possibly overlapping intervals, return a new list of intervals where all overlapping intervals have been merged.
+   * The input list is not necessarily ordered in any way.
+   * For example, given [(1, 3), (5, 8), (4, 10), (20, 25)], you should return [(1, 3), (4, 10), (20, 25)].
+   */
+  case class Pair(x: Int, y: Int)
+  def mkMergedList(overlapping: List[Pair]): List[Pair] = {
+    @tailrec
+    def mergeOverlapping(current: List[Pair], making: List[Pair]): List[Pair] = current match {
+      case Nil => making
+      case h :: tail if making.isEmpty => mergeOverlapping(tail, making :+ h)
+      case h :: tail =>
+        val ml = making.last
+        val isOverlapping: Boolean = ml.y > h.x
+        val smallerX = if (h.x < ml.x) h.x else ml.x
+        val graterY = if (h.y > ml.y) h.y else ml.y
+
+        val newMaking = making.take(making.size - 1) :+ Pair(smallerX, graterY)
+
+        if (isOverlapping) mergeOverlapping(tail, newMaking) else mergeOverlapping(tail, making :+ h)
+    }
+
+    mergeOverlapping(overlapping, Nil)
   }
 
 }
